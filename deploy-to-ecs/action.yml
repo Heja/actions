@@ -3,19 +3,26 @@ description: Action to build and deploy Docker image to AWS ECS
 
 inputs:
   region:
+    description: 'AWS Region'
     required: true
+    default: 'eu-west-1'
   ecr_repository:
+    description: 'ECR Repository'
     required: true
   ecs_task_family:
+    description: 'ECS Task definition family'
     required: true
   ecs_service:
+    description: 'ECS Service'
     required: true
   ecs_cluster:
+    description: 'ECS cluster name'
     required: true
-secrets:
   AWS_ACCESS_KEY_ID:
+    description: 'AWS Access Key ID'
     required: true
   AWS_SECRET_ACCESS_KEY:
+    description: 'AWS Access Key'
     required: true
 
 runs:
@@ -27,8 +34,8 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ inputs.region }}
 
     - name: Login to Amazon ECR
@@ -36,6 +43,7 @@ runs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Build docker image
+      shell: bash
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -47,6 +55,7 @@ runs:
         echo "::set-output name=latest_image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
     - name: Push docker image
+      shell: bash
       id: push-image
       env:
         TAGGED_IMAGE: ${{ steps.build-image.outputs.tagged_image }}
@@ -56,6 +65,7 @@ runs:
         docker push $LATEST_IMAGE
 
     - name: Download task definition
+      shell: bash
       env:
         TASK_FAMILY: ${{ input.ecs_task_family }}
       run: |
