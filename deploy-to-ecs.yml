@@ -1,0 +1,70 @@
+name: Deploy to ECS
+description: Action to build and deploy Docker image to AWS ECS
+
+inputs:
+  region:
+    required: true
+  ecr_repository:
+    required: true
+  ecs_task_family:
+    required: true
+  ecs_service:
+    required: true
+  ecs_cluster:
+    required: true
+secrets:
+  AWS_ACCESS_KEY_ID:
+    required: true
+  AWS_SECRET_ACCESS_KEY:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ inputs.region }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build docker image
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ input.ecr_repository }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build --target=production -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        echo "::set-output name=tagged_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "::set-output name=latest_image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+
+    - name: Push docker image
+      id: push-image
+      env:
+        TAGGED_IMAGE: ${{ steps.build-image.outputs.tagged_image }}
+        LATEST_IMAGE: ${{ steps.build-image.outputs.latest_image }}
+      run: |
+        docker push $TAGGED_IMAGE
+        docker push $LATEST_IMAGE
+
+    - name: Download task definition
+      env:
+        TASK_FAMILY: ${{ input.ecs_task_family }}
+      run: |
+        aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
+
+    - name: Deploy revisioned task definition to trig rolling update
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        service: ${{ input.ecs_service }}
+        cluster: ${{ input.ecs_cluster }}
+        wait-for-service-stability: false
