@@ -1,2 +1,2 @@
-# actions
-Collected Github Actions used within Heja
+# Actions
+Collected Github Actions used within Heja.
