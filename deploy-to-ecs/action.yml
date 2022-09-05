@@ -34,9 +34,9 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ INPUT_AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ INPUT_AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ INPUT_REGION }}
+        aws-access-key-id: ${{ env.INPUT_AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.INPUT_AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.INPUT_REGION }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -47,7 +47,7 @@ runs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ INPUT_ECR_REPOSITORY }}
+        ECR_REPOSITORY: ${{ env.INPUT_ECR_REPOSITORY }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build --target=production -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
@@ -67,7 +67,7 @@ runs:
     - name: Download task definition
       shell: bash
       env:
-        TASK_FAMILY: ${{ INPUT_ECS_TASK_FAMILY }}
+        TASK_FAMILY: ${{ env.INPUT_ECS_TASK_FAMILY }}
       run: |
         aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
 
@@ -75,6 +75,6 @@ runs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: task-definition.json
-        service: ${{ INPUT_ECS_SERVICE }}
-        cluster: ${{ INPUT_ECS_CLUSTER }}
+        service: ${{ env.INPUT_ECS_SERVICE }}
+        cluster: ${{ env.INPUT_ECS_CLUSTER }}
         wait-for-service-stability: false
