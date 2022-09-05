@@ -47,7 +47,7 @@ runs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ input.ecr_repository }}
+        ECR_REPOSITORY: ${{ inputs.ecr_repository }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build --target=production -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
@@ -67,7 +67,7 @@ runs:
     - name: Download task definition
       shell: bash
       env:
-        TASK_FAMILY: ${{ input.ecs_task_family }}
+        TASK_FAMILY: ${{ inputs.ecs_task_family }}
       run: |
         aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
 
@@ -75,6 +75,6 @@ runs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: task-definition.json
-        service: ${{ input.ecs_service }}
-        cluster: ${{ input.ecs_cluster }}
+        service: ${{ inputs.ecs_service }}
+        cluster: ${{ inputs.ecs_cluster }}
         wait-for-service-stability: false
