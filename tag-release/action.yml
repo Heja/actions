@@ -26,6 +26,7 @@ runs:
       shell: bash
       run: |
         version=$(date -u +"${{ inputs.release_tag_prefix }}%Y%m%d_$GITHUB_RUN_NUMBER")
+        echo $version
         echo ::set-output name=version::$version
 
     - name: Get latest release tag
@@ -33,6 +34,7 @@ runs:
       shell: bash
       run: |
         tag=$(git tag --sort=-creatordate | grep ${{ inputs.release_tag_prefix }} | head -n 1)
+        echo $tag
         echo ::set-output name=tag::$tag
 
     - name: Create changelog
