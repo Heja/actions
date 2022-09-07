@@ -1,9 +1,16 @@
 name: Tag release on Github
+description: Action to tag when release is made
 
 inputs:
   release_tag_prefix:
+    description: 'What to prefix the tag with'
     required: true
   repo:
+    description: 'Which repo to use (default: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY)'
+    required: true
+    default: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
+  github_token:
+    description: 'Github access token that can create release and tag'
     required: true
 
 runs:
@@ -16,20 +23,23 @@ runs:
 
     - name: Generate new release tag
       id: set_version
+      shell: bash
       run: |
-        version=$(date -u +"${{ input.release_tag_prefix }}%Y%m%d_$GITHUB_RUN_NUMBER")
+        version=$(date -u +"${{ inputs.release_tag_prefix }}%Y%m%d_$GITHUB_RUN_NUMBER")
         echo ::set-output name=version::$version
 
     - name: Get latest release tag
       id: latest_tag
+      shell: bash
       run: |
-        tag=$(git tag --sort=-creatordate | grep ${{ input.release_tag_prefix }} | head -n 1)
+        tag=$(git tag --sort=-creatordate | grep ${{ inputs.release_tag_prefix }} | head -n 1)
         echo ::set-output name=tag::$tag
 
     - name: Create changelog
       id: changelog
+      shell: bash
       run: |
-        changelog=$(git log ${{ steps.latest_tag.outputs.tag }}...$GITHUB_SHA --reverse --pretty="- %s ([%h](${{ input.repo }}/commit/%H))")
+        changelog=$(git log ${{ steps.latest_tag.outputs.tag }}...$GITHUB_SHA --reverse --pretty="- %s ([%h](${{ inputs.repo }}/commit/%H))")
         # https://github.community/t/set-output-truncates-multiline-strings/16852/2
         changelog="${changelog//'%'/'%25'}"
         changelog="${changelog//$'\n'/'%0A'}"
@@ -40,7 +50,7 @@ runs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
       with:
         tag_name: ${{ steps.set_version.outputs.version }}
         release_name: ${{ steps.set_version.outputs.version }}
@@ -50,4 +60,5 @@ runs:
         prerelease: false
 
     - name: Link to release
+      shell: bash
       run: echo ${{ steps.create_release.outputs.html_url }}
