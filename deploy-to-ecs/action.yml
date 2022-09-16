@@ -23,6 +23,9 @@ inputs:
   aws_secret_access_key:
     description: 'AWS Access Key'
     required: true
+  build_target:
+    description: 'Docker build target'
+    default: 'production'
 
 runs:
   using: 'composite'
@@ -48,8 +51,9 @@ runs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ inputs.ecr_repository }}
         IMAGE_TAG: ${{ github.sha }}
+        TARGET: ${{ inputs.build_target }}
       run: |
-        DOCKER_BUILDKIT=1 docker build --target=production -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        DOCKER_BUILDKIT=1 docker build --target=$TARGET -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         echo "::set-output name=tagged_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         echo "::set-output name=latest_image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
