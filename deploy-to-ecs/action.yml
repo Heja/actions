@@ -67,17 +67,9 @@ runs:
         docker push $TAGGED_IMAGE
         docker push $LATEST_IMAGE
 
-    - name: Download task definition
-      shell: bash
-      env:
-        TASK_FAMILY: ${{ inputs.ecs_task_family }}
-      run: |
-        aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
-
-    - name: Deploy revisioned task definition to trig rolling update
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+    - name: Deploy task definition
+      uses: Heja/deploy-ecs-service@main
       with:
-        task-definition: task-definition.json
-        service: ${{ inputs.ecs_service }}
-        cluster: ${{ inputs.ecs_cluster }}
-        wait-for-service-stability: false
+        ecs_task_family: ${{ inputs.ecs_task_family }}
+        ecs_service: ${{ inputs.ecs_service }}
+        ecs_cluster: ${{ inputs.ecs_cluster }}
