@@ -68,7 +68,7 @@ runs:
         docker push $LATEST_IMAGE
 
     - name: Deploy task definition
-      uses: Heja/deploy-ecs-service@beta
+      uses: Heja/actions/deploy-ecs-service@beta
       with:
         ecs_task_family: ${{ inputs.ecs_task_family }}
         ecs_service: ${{ inputs.ecs_service }}
