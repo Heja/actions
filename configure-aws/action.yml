@@ -4,7 +4,6 @@ description: Action to configure AWS for action
 inputs:
   aws_region:
     description: 'AWS Region'
-    required: true
     default: eu-west-1
   aws_access_key_id:
     description: 'AWS Access Key ID'
