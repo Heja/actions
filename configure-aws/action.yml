@@ -2,7 +2,7 @@ name: Configure AWS
 description: Action to configure AWS for action
 
 inputs:
-  region:
+  aws_region:
     description: 'AWS Region'
     required: true
     default: eu-west-1
@@ -19,6 +19,6 @@ runs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ inputs.aws_access_key_id }}
-        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-        aws-region: ${{ inputs.region }}
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_region: ${{ inputs.aws_region }}
