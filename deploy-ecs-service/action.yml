@@ -1,0 +1,31 @@
+name: Deploy ECS Service
+description: Update task definition and deploy to ECS service
+
+inputs:
+  ecs_task_family:
+    description: 'ECS Task definition family'
+    required: true
+  ecs_service:
+    description: 'ECS Service'
+    required: true
+  ecs_cluster:
+    description: 'ECS cluster name'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Download task definition
+      shell: bash
+      env:
+        TASK_FAMILY: ${{ inputs.ecs_task_family }}
+      run: aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
+
+    - name: Deploy revisioned task definition to trig rolling update
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        service: ${{ inputs.ecs_service }}
+        cluster: ${{ inputs.ecs_cluster }}
+        wait-for-service-stability: false
+  
