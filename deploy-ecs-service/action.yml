@@ -11,7 +11,7 @@ inputs:
   ecs_cluster:
     description: 'ECS cluster name'
     required: true
-  region:
+  aws_region:
     description: 'AWS Region'
   aws_access_key_id:
     description: 'AWS Access Key ID'

@@ -73,3 +73,6 @@ runs:
         ecs_task_family: ${{ inputs.ecs_task_family }}
         ecs_service: ${{ inputs.ecs_service }}
         ecs_cluster: ${{ inputs.ecs_cluster }}
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_region: ${{ inputs.region }}
