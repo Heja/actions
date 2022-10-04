@@ -28,13 +28,13 @@ inputs:
     default: 'production'
 
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: Heja/actions/configure-aws@beta
       with:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}

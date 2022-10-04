@@ -11,10 +11,25 @@ inputs:
   ecs_cluster:
     description: 'ECS cluster name'
     required: true
+  region:
+    description: 'AWS Region'
+  aws_access_key_id:
+    description: 'AWS Access Key ID'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS Access Key'
+    required: true
 
 runs:
   using: composite
   steps:
+    - name: Configure AWS
+      uses: Heja/actions/configure-aws@beta
+      with:
+        aws-access-key-id: ${{ inputs.aws_access_key_id }}
+        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+        aws-region: ${{ inputs.region }}
+
     - name: Download task definition
       shell: bash
       env:
