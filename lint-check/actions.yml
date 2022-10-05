@@ -11,6 +11,11 @@ runs:
     
     - name: Checkout main and switch back
       run: git checkout main && git checkout -
+    
+    - name: Install nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
 
     - name: Install compatible npm version
       run: npm install npm@8.5.5 -g
