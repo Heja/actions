@@ -10,6 +10,7 @@ runs:
         fetch-depth: 0
     
     - name: Checkout main and switch back
+      shell: bash
       run: git checkout main && git checkout -
     
     - name: Install nodejs
@@ -18,9 +19,11 @@ runs:
         node-version: 16
 
     - name: Install compatible npm version
+      shell: bash
       run: npm install npm@8.5.5 -g
     
     - name: Install npm packages
+      shell: bash
       run: npm ci
     
     - name: Get changed files
@@ -28,6 +31,7 @@ runs:
       uses: tj-actions/changed-files@v31
 
     - name: List changed files
+      shell: bash
       run: |
         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           echo "$file was changed"
