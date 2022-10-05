@@ -1,0 +1,35 @@
+name: Lint changed files
+description: This will lint all changed files (relative to `main`)
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    
+    - name: Checkout main and switch back
+      run: git checkout main && git checkout -
+
+    - name: Install compatible npm version
+      run: npm install npm@8.5.5 -g
+    
+    - name: Install npm packages
+      run: npm ci
+    
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v31
+
+    - name: List changed files
+      run: |
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo "$file was changed"
+        done
+    
+    # - name: Collect changed files
+    #   run: |
+    #     git diff --diff-filter=AMR --name-only main |
+    #     awk '/(tsx|jsx|js|ts|json)$/' |
+    #     xargs eslint --quiet --ext .js,.ts,.tsx -c ./.eslintrc.js
