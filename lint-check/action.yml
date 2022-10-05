@@ -9,10 +9,6 @@ runs:
       with:
         fetch-depth: 0
     
-    - name: Checkout main and switch back
-      shell: bash
-      run: git checkout main && git checkout -
-    
     - name: Install nodejs
       uses: actions/setup-node@v1
       with:
@@ -43,9 +39,9 @@ runs:
         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           echo "$file was changed"
         done
-    
-    # - name: Collect changed files
-    #   run: |
-    #     git diff --diff-filter=AMR --name-only main |
-    #     awk '/(tsx|jsx|js|ts|json)$/' |
-    #     xargs eslint --quiet --ext .js,.ts,.tsx -c ./.eslintrc.js
+
+    - name: Check linting in changed files
+      shell: bash
+      run: |
+        echo "${{ steps.changed-files.outputs.all_changed_files }}" |
+        xargs npx eslint --quiet --ext .js,.ts,.tsx
