@@ -31,11 +31,11 @@ runs:
       uses: tj-actions/changed-files@v31
       with:
         files: |
-          *.ts
-          *.tsx
-          *.js
-          *.jsx
-          *.json
+          **/*.ts
+          **/*.tsx
+          **/*.js
+          **/*.jsx
+          **/*.json
 
     - name: List changed files
       shell: bash
