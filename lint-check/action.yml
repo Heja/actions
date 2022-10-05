@@ -4,7 +4,7 @@ description: This will lint all changed files (relative to `main`)
 inputs:
   path:
     description: Path to files
-    default: ./src
+    default: src
 
 runs:
   using: composite
