@@ -26,11 +26,8 @@ runs:
       id: changed-files
       uses: tj-actions/changed-files@v31
       with:
-        files: |
-          **.ts
-          **.tsx
-          **.js
-          **.jsx
+        files-separator: ","
+        files: "**.ts,**.tsx,**.js,**.jsx"
 
     - name: List changed files
       shell: bash
@@ -41,6 +38,4 @@ runs:
 
     - name: Check linting in changed files
       shell: bash
-      run: |
-        echo "${{ steps.changed-files.outputs.all_changed_files }}" |
-        xargs npx eslint --quiet --ext .js,.ts,.tsx
+      run: npx eslint --quiet --ext .js,.ts,.tsx {{ steps.changed-files.outputs.all_changed_files }}
