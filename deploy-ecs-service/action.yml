@@ -1,0 +1,46 @@
+name: Deploy ECS Service
+description: Update task definition and deploy to ECS service
+
+inputs:
+  ecs_task_family:
+    description: 'ECS Task definition family'
+    required: true
+  ecs_service:
+    description: 'ECS Service'
+    required: true
+  ecs_cluster:
+    description: 'ECS cluster name'
+    required: true
+  aws_region:
+    description: 'AWS Region'
+  aws_access_key_id:
+    description: 'AWS Access Key ID'
+    required: true
+  aws_secret_access_key:
+    description: 'AWS Access Key'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure AWS
+      uses: Heja/actions/configure-aws@v1.1
+      with:
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_region: ${{ inputs.aws_region }}
+
+    - name: Download task definition
+      shell: bash
+      env:
+        TASK_FAMILY: ${{ inputs.ecs_task_family }}
+      run: aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
+
+    - name: Deploy revisioned task definition to trig rolling update
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        service: ${{ inputs.ecs_service }}
+        cluster: ${{ inputs.ecs_cluster }}
+        wait-for-service-stability: false
+  

@@ -28,17 +28,17 @@ inputs:
     default: 'production'
 
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: Heja/actions/configure-aws@v1.1
       with:
-        aws-access-key-id: ${{ inputs.aws_access_key_id }}
-        aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-        aws-region: ${{ inputs.region }}
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_region: ${{ inputs.region }}
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -67,17 +67,12 @@ runs:
         docker push $TAGGED_IMAGE
         docker push $LATEST_IMAGE
 
-    - name: Download task definition
-      shell: bash
-      env:
-        TASK_FAMILY: ${{ inputs.ecs_task_family }}
-      run: |
-        aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
-
-    - name: Deploy revisioned task definition to trig rolling update
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+    - name: Deploy task definition
+      uses: Heja/actions/deploy-ecs-service@v1.1
       with:
-        task-definition: task-definition.json
-        service: ${{ inputs.ecs_service }}
-        cluster: ${{ inputs.ecs_cluster }}
-        wait-for-service-stability: false
+        ecs_task_family: ${{ inputs.ecs_task_family }}
+        ecs_service: ${{ inputs.ecs_service }}
+        ecs_cluster: ${{ inputs.ecs_cluster }}
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_region: ${{ inputs.region }}
