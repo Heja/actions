@@ -1,6 +1,11 @@
 name: Lint changed files
 description: This will lint all changed files (relative to `main`)
 
+inputs:
+  path:
+    description: Path to files
+    default: ./src
+
 runs:
   using: composite
   steps:
@@ -29,6 +34,14 @@ runs:
     - name: Get changed files
       id: changed-files
       uses: tj-actions/changed-files@v31
+      with:
+        path: ${{ inputs.path }}
+        files: |
+          *.ts
+          *.tsx
+          *.js
+          *.jsx
+          *.json
 
     - name: List changed files
       shell: bash
