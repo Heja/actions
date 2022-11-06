@@ -30,12 +30,17 @@ runs:
         files: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 
     - name: List changed files
+      id: fix-changed-path
       shell: bash
       run: |
+        OUTPUT=""
         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           echo "$file was changed"
+          OUTPUT+="${file@Q}"
         done
+        echo "::set-output name=escaped-file-paths::OUTPUT"
+
 
     - name: Check linting in changed files
       shell: bash
-      run: npx eslint --quiet --ext .js,.ts,.tsx "${{ steps.changed-files.outputs.all_changed_files }}"
+      run: npx eslint --quiet --ext .js,.ts,.tsx ${{ steps.fix-changed-files.outputs.escaped-file-paths }}
