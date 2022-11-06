@@ -1,0 +1,49 @@
+name: Check formatting
+description: This will check formatting in all changed files (relative to `main`)
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    
+    - name: Install nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+
+    - name: Install compatible npm version
+      shell: bash
+      run: npm install npm@8.5.5 -g
+    
+    - name: Install npm packages
+      shell: bash
+      run: npm ci
+    
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v31
+      with:
+        separator: ","
+        old_new_files_separator: ","
+        files_separator: ","
+        files: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
+
+    - name: List changed files
+      id: fix-changed-paths
+      shell: bash
+      run: |
+        OUT=""
+        IFS=','
+        read -ra Arr <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+        for file in "${Arr[@]}"; do
+          echo "$file was changed"
+          OUT+="$(printf "%q" $file) "
+        done
+        echo "escaped-file-paths=$OUT" >> $GITHUB_OUTPUT
+
+    - name: Check formatting in changed files
+      shell: bash
+      run: npx prettier --check ${{ steps.fix-changed-paths.outputs.escaped-file-paths }}
