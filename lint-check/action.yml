@@ -32,16 +32,16 @@ runs:
         files: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 
     - name: List changed files
-      id: fix-changed-path
+      id: fix-changed-paths
       shell: bash
       run: |
         OUTPUT=""
         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          # echo "$file was changed"
-          OUTPUT+=$(printf "%q" "$file")
+          echo "$file was changed"
+          OUTPUT+=$(printf "%q" "$file" | tr "," " ")
         done
         echo "escaped-file-paths=$OUTPUT" >> $GITHUB_OUTPUT
 
     - name: Check linting in changed files
       shell: bash
-      run: npx eslint --quiet --ext .js,.ts,.tsx ${{ steps.changed-files.outputs.all_changed_files }}
+      run: npx eslint --quiet --ext .js,.ts,.tsx ${{ steps.fix-changed-paths.outputs.escaped-file-paths }}
