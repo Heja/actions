@@ -29,6 +29,19 @@ runs:
         files_separator: ","
         files: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 
+    - name: List changed files
+      id: fix-changed-paths
+      shell: bash
+      run: |
+        OUT=""
+        IFS=','
+        read -ra Arr <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+        for file in "${Arr[@]}"; do
+          echo "$file was changed"
+          OUT+="$(printf "%q" $file) "
+        done
+        echo "escaped-file-paths=$OUT" >> $GITHUB_OUTPUT
+
     - name: Check formatting in changed files
       shell: bash
-      run: npx prettier --check "${{ steps.changed-files.outputs.all_changed_files }}"
+      run: npx prettier --check ${{ steps.fix-changed-paths.outputs.escaped-file-paths }}
