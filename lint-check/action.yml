@@ -35,12 +35,14 @@ runs:
       id: fix-changed-paths
       shell: bash
       run: |
-        OUTPUT=""
-        for file in $(${{ steps.changed-files.outputs.all_changed_files }} | tr "," " "); do
+        OUT=""
+        IFS=','
+        read -ra Arr <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+        for file in "${Arr[@]}"; do
           echo "$file was changed"
-          OUTPUT+=$(printf "%q" "$file" | tr "," " ")
+          OUT+="$(printf "%q" $file) "
         done
-        echo "escaped-file-paths=$OUTPUT" >> $GITHUB_OUTPUT
+        echo "escaped-file-paths=$OU" >> $GITHUB_OUTPUT
 
     - name: Check linting in changed files
       shell: bash
