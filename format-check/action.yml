@@ -26,6 +26,8 @@ runs:
       id: changed-files
       uses: tj-actions/changed-files@v31
       with:
+        separator: ","
+        old_new_files_separator: ","
         files_separator: ","
         files: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 
