@@ -42,7 +42,7 @@ runs:
           echo "$file was changed"
           OUT+="$(printf "%q" $file) "
         done
-        echo "escaped-file-paths=$OU" >> $GITHUB_OUTPUT
+        echo "escaped-file-paths=$OUT" >> $GITHUB_OUTPUT
 
     - name: Check linting in changed files
       shell: bash
