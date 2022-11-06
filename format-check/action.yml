@@ -29,13 +29,6 @@ runs:
         files_separator: ","
         files: "**/*.ts,**/*.tsx,**/*.js,**/*.jsx"
 
-    - name: List changed files
-      shell: bash
-      run: |
-        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          echo "$file was changed"
-        done
-
     - name: Check formatting in changed files
       shell: bash
-      run: npx prettier --check ${{ steps.changed-files.outputs.all_changed_files }}
+      run: npx prettier --check "${{ steps.changed-files.outputs.all_changed_files }}"

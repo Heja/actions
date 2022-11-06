@@ -38,4 +38,4 @@ runs:
 
     - name: Check linting in changed files
       shell: bash
-      run: npx eslint --quiet --ext .js,.ts,.tsx ${{ steps.changed-files.outputs.all_changed_files }}
+      run: npx eslint --quiet --ext .js,.ts,.tsx "${{ steps.changed-files.outputs.all_changed_files }}"
