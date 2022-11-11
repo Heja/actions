@@ -34,7 +34,7 @@ runs:
       uses: actions/checkout@v3
 
     - name: Configure AWS credentials
-      uses: Heja/actions/configure-aws@v2
+      uses: Heja/actions/configure-aws@v3
       with:
         aws_access_key_id: ${{ inputs.aws_access_key_id }}
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
@@ -68,7 +68,7 @@ runs:
         docker push $LATEST_IMAGE
 
     - name: Deploy task definition
-      uses: Heja/actions/deploy-ecs-service@v1.1
+      uses: Heja/actions/deploy-ecs-service@v3
       with:
         ecs_task_family: ${{ inputs.ecs_task_family }}
         ecs_service: ${{ inputs.ecs_service }}
