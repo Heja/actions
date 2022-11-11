@@ -24,7 +24,7 @@ runs:
   using: composite
   steps:
     - name: Configure AWS
-      uses: Heja/actions/configure-aws@v1.1
+      uses: Heja/actions/configure-aws@v2
       with:
         aws_access_key_id: ${{ inputs.aws_access_key_id }}
         aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
