@@ -17,7 +17,7 @@ runs:
   using: 'composite'
   steps:
     - name: Checout code with tags
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0 # needed to get tags
 
