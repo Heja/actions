@@ -57,7 +57,7 @@ runs:
         TARGET: ${{ inputs.build_target }}
         BUILD_ARG: ${{ inputs.build_arg }}
       run: |
-        DOCKER_BUILDKIT=1 docker build ${{ (inputs.build_arg !== '' && [ '--build-args', $inputs.build_arg] || '') }} --target=$TARGET -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        DOCKER_BUILDKIT=1 docker build ${{ (inputs.build_arg != '' && [ '--build-args', $inputs.build_arg] || '') }} --target=$TARGET -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         echo "::set-output name=tagged_image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
         echo "::set-output name=latest_image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
 
